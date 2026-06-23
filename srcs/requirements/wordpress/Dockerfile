@@ -1,7 +1,9 @@
 FROM debian:bookworm
 
-RUN apt update && apt install php-fpm -y
+RUN apt update && apt install -y php-fpm php php-mysql wget bash
 
-EXPOSE 9000
+COPY script.sh .
 
-CMD [ "php-fpm8.2", "-F"]
+RUN chmod +x script.sh
+
+CMD [ "bash", "script.sh"]
