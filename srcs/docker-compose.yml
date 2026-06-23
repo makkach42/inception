@@ -1,18 +1,33 @@
 services:
-  nginx:
-    build: requirements/nginx/.
-    container_name: nginx
-    ports:
-      - "80:80"
   wordpress:
     build: requirements/wordpress/.
-    container_name: wp-php
+    container_name: wordpress
+    volumes:
+      - wordpress_vol:/wordpress
+    networks:
+      - bghd
+  mariadb:
+    build: requirements/mariadb/.
+    container_name: mariadb
+    volumes:
+      - mariadb_vol:/var/lib/mysql
+    networks:
+      - bghd
 
 volumes:
   mariadb_vol:
     driver: local
     driver_opts:
       type: none
-      device: /home/makkach/data
+      device: /home/qwerty/data/mariadb
       o: bind
 
+  wordpress_vol:
+    driver: local
+    driver_opts:
+      type: none
+      device: /home/qwerty/data/wordpress
+      o: bind
+
+networks:
+  bghd
