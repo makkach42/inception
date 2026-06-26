@@ -11,7 +11,11 @@ then    wget https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cl
 
         wp config create --dbname=wordpress --dbuser=qwerty --dbpass=password --dbhost=maria --allow-root
 
-        wp core install --allow-root --url=qwerty.42.fr --title=azerty --admin_user=qwerty --admin_email=qwerty@fuckyou.smd
+        wp core install --allow-root --url=qwerty.42.fr --title=azerty --admin_user=qwertyu --admin_password=adpassword --admin_email=qwertyu@fuckyou.smd
+
+        if ! wp user get qwerty --allow-root > /dev/null 2>&1; then
+                wp user create qwerty qwerty@fuckyou.smd --role=author --user_pass=password --allow-root
+        fi
 fi
 
 exec php-fpm8.2 -F

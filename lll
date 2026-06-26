@@ -1,4 +1,91 @@
-; Start a new pool named 'www'.
+FROM debian:bookworm
+
+RUN apt update && apt install mariadb-server -y && apt install bash -y
+
+RUN mkdir /run/mysqld
+
+RUN chown mysql:mysql /run/mysqld
+
+COPY script.sh .
+
+CMD ["bash", "script.sh"]#!/bin/bash
+
+mariadbd --user=mysql &
+
+sleep 6
+
+mariadb -u root <<EOF
+CREATE DATABASE IF NOT EXISTS wordpress;
+CREATE USER IF NOT EXISTS 'qwerty'@'%' IDENTIFIED BY 'password';
+GRANT ALL PRIVILEGES ON wordpress.* TO 'qwerty'@'%';
+FLUSH PRIVILEGES;
+EOF
+
+mysqladmin -u root shutdown
+
+exec mariadbd --user=mysql --bind-address=0.0.0.0FROM debian:bookworm
+
+RUN apt update && apt install nginx openssl -y
+
+RUN mkdir -p /etc/nginx/ssl && openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout /etc/nginx/ssl/key.pem -out /etc/nginx/ssl/cert.pem -subj "/CN=qwerty.42.fr"
+
+COPY file.conf /etc/nginx/nginx.conf
+
+EXPOSE 443
+
+CMD [ "nginx", "-g", "daemon off;" ]
+events
+{
+	
+}
+
+http
+{
+	include /etc/nginx/mime.types;
+	server {
+		listen 443 ssl;
+		ssl_certificate /etc/nginx/ssl/cert.pem;
+		ssl_certificate_key /etc/nginx/ssl/key.pem;
+		root /wordpress;
+		location /
+		{
+			index index.php;
+			try_files $uri $uri/ /index.php?$args;
+		}
+		location ~ \.php$ {
+			fastcgi_pass wordpress:9000;
+			include fastcgi_params;
+			fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
+		}
+	}
+}
+FROM debian:bookworm
+
+RUN apt update && apt install -y php-fpm php php-mysql wget bash
+
+COPY script.sh .
+
+COPY www.conf /etc/php/8.2/fpm/pool.d/www.conf
+
+RUN chmod +x script.sh
+
+CMD [ "bash", "script.sh"]#!/bin/bash
+
+if  ! command -v wp > /dev/null 2>&1  ;
+then    wget https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar && \
+        chmod +x wp-cli.phar && \
+        mv wp-cli.phar /usr/local/bin/wp
+        mkdir -p /wordpress
+        cd /wordpress
+
+        wp core download --allow-root
+
+        wp config create --dbname=wordpress --dbuser=qwerty --dbpass=password --dbhost=maria --allow-root
+
+        wp core install --allow-root --url=qwerty.42.fr --title=azerty --admin_user=qwertyu --admin_password=adpassword --admin_email=qwerty@fuckyou.smd
+fi
+
+exec php-fpm8.2 -F; Start a new pool named 'www'.
 ; the variable $pool can be used in any directive and will be replaced by the
 ; pool name ('www' here)
 [www]
