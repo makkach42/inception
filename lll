@@ -12,28 +12,34 @@ CMD ["bash", "script.sh"]#!/bin/bash
 
 mariadbd --user=mysql &
 
-sleep 6
+until mariadb -u root -e "SELECT 1" &> /dev/null; do
+    sleep 0.5
+done;
+
+password=$(cat /run/secrets/DB_USER_PASSWORD)
 
 mariadb -u root <<EOF
-CREATE DATABASE IF NOT EXISTS wordpress;
-CREATE USER IF NOT EXISTS 'qwerty'@'%' IDENTIFIED BY 'password';
-GRANT ALL PRIVILEGES ON wordpress.* TO 'qwerty'@'%';
+CREATE DATABASE IF NOT EXISTS ${DATABASE_NAME};
+CREATE USER IF NOT EXISTS '${USER_NAME}'@'%' IDENTIFIED BY '${password}';
+GRANT ALL PRIVILEGES ON wordpress.* TO '${USER_NAME}'@'%';
 FLUSH PRIVILEGES;
 EOF
 
 mysqladmin -u root shutdown
 
-exec mariadbd --user=mysql --bind-address=0.0.0.0FROM debian:bookworm
+exec mariadbd --user=mysql --bind-address=0.0.0.0passwordFROM debian:bookworm
 
 RUN apt update && apt install nginx openssl -y
 
-RUN mkdir -p /etc/nginx/ssl && openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout /etc/nginx/ssl/key.pem -out /etc/nginx/ssl/cert.pem -subj "/CN=qwerty.42.fr"
-
 COPY file.conf /etc/nginx/nginx.conf
+
+COPY script.sh .
+
+RUN chmod +x script.sh
 
 EXPOSE 443
 
-CMD [ "nginx", "-g", "daemon off;" ]
+CMD [ "bash", "script.sh"]
 events
 {
 	
@@ -59,7 +65,13 @@ http
 		}
 	}
 }
-FROM debian:bookworm
+#!bin/bash
+
+mkdir -p /etc/nginx/ssl
+
+openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout /etc/nginx/ssl/key.pem -out /etc/nginx/ssl/cert.pem -subj "/CN=${DB_ROOT}.42.fr"
+
+exec nginx -g "daemon off;"FROM debian:bookworm
 
 RUN apt update && apt install -y php-fpm php php-mysql wget bash
 
@@ -71,6 +83,10 @@ RUN chmod +x script.sh
 
 CMD [ "bash", "script.sh"]#!/bin/bash
 
+DB_PASS=$(cat /run/secrets/WP_PASSWORD)
+ADMIN_PASSWORD=$(cat /run/secrets/WP_ADMIN_PASSWORD)
+USER_PASSWORD=$(cat /run/secrets/WP_USER_PASSWORD)
+
 if  ! command -v wp > /dev/null 2>&1  ;
 then    wget https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar && \
         chmod +x wp-cli.phar && \
@@ -79,13 +95,16 @@ then    wget https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cl
         cd /wordpress
 
         wp core download --allow-root
+        wp config create --dbname=${DB_NAME} --dbuser=${DB_USER} --dbpass=${DB_PASS} --dbhost=${DB_HOST} --allow-root
 
-        wp config create --dbname=wordpress --dbuser=qwerty --dbpass=password --dbhost=maria --allow-root
+        wp core install --allow-root --url=${DB_ROOT}.42.fr --title=azerty --admin_user=${DB_ROOT} --admin_password=${ADMIN_PASSWORD} --admin_email=${DB_ROOT}@fuckyou.smd
 
-        wp core install --allow-root --url=qwerty.42.fr --title=azerty --admin_user=qwertyu --admin_password=adpassword --admin_email=qwerty@fuckyou.smd
+        if ! wp user get qwerty --allow-root > /dev/null 2>&1; then
+                wp user create qwerty qwerty@fuckyou.smd --role=author --user_pass=${USER_PASSWORD} --allow-root
+        fi
 fi
 
-exec php-fpm8.2 -F; Start a new pool named 'www'.
+exec php-fpm8.2 -Fadpasswordpasswordpassword; Start a new pool named 'www'.
 ; the variable $pool can be used in any directive and will be replaced by the
 ; pool name ('www' here)
 [www]

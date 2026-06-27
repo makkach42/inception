@@ -1,24 +1,11 @@
-all:	build_nginx build_maria build_wordpress run_nginx run_maria run_wordpress
+DOMAIN := $(shell grep "DB_ROOT" srcs/requirements/wordpress/.env | grep DB_ROOT | cut -d'=' -f2).42.fr
 
-build_nginx:
-	docker build -t nginx ./srcs/requirements/nginx
-build_maria:
-	docker build -t mariadb ./srcs/requirements/mariadb
-build_wordpress:
-	docker build -t wordpress ./srcs/requirements/wordpress
+all:
+	@if ! grep -q "$(DOMAIN)" /etc/hosts; then \
+		FILE=$$(cat /etc/hosts); \
+		sudo bash -c 'echo "127.0.0.1 $(DOMAIN)" > /etc/hosts'; \
+	fi
+	docker compose -f ./srcs/docker-compose.yml up --build
 
-run_nginx:
-	docker run -d --name nginx -p 8000:80 nginx
-run_maria:
-	docker run -d --name mariadb mariadb
-run_wordpress:
-	docker run -d --name wordpress wordpress
-
-
-rm_cont_nginx:
-	docker rm -f nginx
-rm_cont_maria:
-	docker rm -f mariadb
-rm_cont_wp:
-	docker rm -f wordpress
-
+fclean:
+	docker compose -f ./srcs/docker-compose.yml down
