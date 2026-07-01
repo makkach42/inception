@@ -1,6 +1,6 @@
 #!/bin/bash
 
-if  ! command -v wp > /dev/null 2>&1 ; then
+if ! command -v wp > /dev/null 2>&1 ; then
 
     wget https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar
 
@@ -18,6 +18,5 @@ if  ! command -v wp > /dev/null 2>&1 ; then
 
     wp user create ${WP_SEC_USER} ${WP_SEC_USER_MAIL} --user_pass=${WP_SEC_USER_PASS}  --path=/wordpress --allow-root
 
-    exec php-fpm8.2 --nodaemonize
-
 fi
+exec php-fpm8.2 --nodaemonize

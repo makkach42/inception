@@ -9,6 +9,11 @@ services:
       - ./.env
     networks:
       - inception
+    volumes:
+      - wordpress_vol:/wordpress
+    depends_on:
+      wordpress:
+       condition: service_started
 
   mariadb:
     image: mariadb
@@ -22,6 +27,11 @@ services:
       - inception
     volumes:
       - mariadb_vol:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mariadb" , "-u", "root", "-e", "SELECT 1"]
+      interval: 3s
+      timeout: 3s
+      retries: 10
 
   wordpress:
     image: wordpress
@@ -35,6 +45,9 @@ services:
       - wordpress_vol:/wordpress
     secrets:
       - WP_PASSWORD
+    depends_on:
+      mariadb:
+        condition: service_healthy
 
 networks:
   inception:
