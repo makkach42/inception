@@ -2,17 +2,19 @@
 
 mariadbd --user=mysql &
 
-until mariadb -u root -e "SELECT 1" &> /dev/null; do
-    sleep 0.5
-done;
+until mariadb -u root -e "SELECT 1" > /dev/null 2>&1; do
+    sleep 0.5;
+done
 
-password=$(cat /run/secrets/DB_USER_PASSWORD)
+db_password=$(cat /run/secrets/DB_USER_PASSWORD)
+
+echo $db_password
 
 mariadb -u root <<EOF
-CREATE DATABASE IF NOT EXISTS ${DATABASE_NAME};
-CREATE USER IF NOT EXISTS '${USER_NAME}'@'%' IDENTIFIED BY '${password}';
-GRANT ALL PRIVILEGES ON wordpress.* TO '${USER_NAME}'@'%';
-FLUSH PRIVILEGES;
+create database if not exists ${DB_NAME};
+create user if not exists '${DB_USER}'@'%' identified by '$db_password';
+grant all privileges on ${DB_NAME}.* to '${DB_USER}'@'%';
+flush privileges;
 EOF
 
 mysqladmin -u root shutdown

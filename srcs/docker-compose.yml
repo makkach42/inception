@@ -1,85 +1,89 @@
 services:
-  wordpress:
-    build: requirements/wordpress/.
-    image: wordpress
-    container_name: wordpress
+  nginx:
+    image: nginx:inception
+    container_name: nginx
+    build: ./requirements/nginx
+    ports:
+      - 443:443
     env_file:
-      - requirements/wordpress/.env
+      - ./.env
+    networks:
+      - inception
     volumes:
       - wordpress_vol:/wordpress
-    networks:
-      - inception
-    secrets:
-      - WP_PASSWORD
-      - WP_ADMIN_PASSWORD
-      - WP_USER_PASSWORD
+    restart: on-failure
     depends_on:
-      mariadb:
-        condition: service_healthy
-
+      wordpress:
+       condition: service_started
 
   mariadb:
-    build: requirements/mariadb/.
-    image: mariadb
+    image: mariadb:inception
     container_name: mariadb
+    build: ./requirements/mariadb
+    restart: on-failure
     secrets:
       - DB_USER_PASSWORD
-
-    env_file: 
-      - requirements/mariadb/.env
-    volumes:
-      - mariadb_vol:/var/lib/mysql
+    env_file:
+      - ./.env
     networks:
       - inception
+    volumes:
+      - mariadb_vol:/var/lib/mysql
     healthcheck:
-      test: ["CMD", "mariadb", "-u", "root", "-e", "SELECT 1"]
+      test: ["CMD", "mariadb" , "-u", "root", "-e", "SELECT 1"]
       interval: 3s
       timeout: 3s
       retries: 10
     
+  static_website:
+    image: static_website:bonus
+    container_name: static_website
+    build: ./bonus/static_website/
+    ports:
+      - 81:81
 
-
-  nginx:
-    build: requirements/nginx/.
-    image: nginx
-    container_name: nginx
+  wordpress:
+    image: wordpress:inception
+    container_name: wordpress
+    build: ./requirements/wordpress
+    restart: on-failure
     env_file:
-      - requirements/wordpress/.env
-    volumes:
-      - wordpress_vol:/wordpress
+      - ./.env
     networks:
       - inception
-    ports:
-      - "443:443"
+    volumes:
+      - wordpress_vol:/wordpress
+    secrets:
+      - WP_PASSWORD
+      - WP_SEC_USER_PASS
+      - ADMIN_USER_PASS
     depends_on:
-      wordpress:
-        condition: service_started
+      mariadb:
+        condition: service_healthy
 
+networks:
+  inception:
 
 volumes:
   mariadb_vol:
     driver: local
     driver_opts:
       type: none
-      device: /home/qwerty/data/mariadb
+      device: /home/makkach/data/mariadb
       o: bind
-
   wordpress_vol:
     driver: local
     driver_opts:
       type: none
-      device: /home/qwerty/data/wordpress
+      device: /home/makkach/data/wordpress
       o: bind
-
-networks:
-  inception:
-
+    
 secrets:
-  DB_USER_PASSWORD:
-    file: requirements/mariadb/secrets
+  DB_USER_PASSWORD: 
+    file: ../secrets/DB_USER_PASSWORD
   WP_PASSWORD:
-    file: requirements/wordpress/WP_PASSWORD
-  WP_ADMIN_PASSWORD:
-    file: requirements/wordpress/WP_ADMIN_PASSWORD
-  WP_USER_PASSWORD:
-    file: requirements/wordpress/WP_USER_PASSWORD
+    file: ../secrets/WP_PASSWORD
+  WP_SEC_USER_PASS:
+    file: ../secrets/WP_SEC_USER_PASS
+  ADMIN_USER_PASS:
+    file: ../secrets/ADMIN_USER_PASS

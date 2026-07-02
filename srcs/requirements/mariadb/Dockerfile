@@ -1,10 +1,8 @@
 FROM debian:bookworm
 
-RUN apt update && apt install mariadb-server -y && apt install bash -y
+RUN apt update && apt install -y mariadb-server
 
-RUN mkdir /run/mysqld
-
-RUN chown mysql:mysql /run/mysqld
+RUN mkdir -p /run/mysqld && chown mysql:mysql /run/mysqld
 
 COPY script.sh .
 
