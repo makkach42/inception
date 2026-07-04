@@ -49,8 +49,6 @@ services:
     container_name: redis
     build: ./bonus/redis/
     restart: on-failure
-    ports:
-      - 6379:6379
     networks:
       - inception
 
@@ -72,6 +70,23 @@ services:
     depends_on:
       mariadb:
         condition: service_healthy
+
+  ftp_server:
+    image: ftp_server:bonus
+    container_name: ftp_server
+    build: ./bonus/ftp_server/
+    restart: on-failure
+    networks:
+      - inception
+    volumes:
+      - wordpress_vol:/wordpress
+    env_file:
+      - .env
+    secrets:
+      - FTP_USER_PASS
+    ports:
+      - 21:21
+      - 2100:2100
 
 networks:
   inception:
@@ -99,3 +114,5 @@ secrets:
     file: ../secrets/WP_SEC_USER_PASS
   ADMIN_USER_PASS:
     file: ../secrets/ADMIN_USER_PASS
+  FTP_USER_PASS:
+    file: ../secrets/FTP_USER_PASS
