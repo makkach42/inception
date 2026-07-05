@@ -16,8 +16,6 @@ services:
       wordpress:
        condition: service_started
 
-
-
   mariadb:
     image: mariadb:inception
     container_name: mariadb
@@ -36,21 +34,6 @@ services:
       interval: 3s
       timeout: 3s
       retries: 10
-    
-  static_website:
-    image: static_website:bonus
-    container_name: static_website
-    build: ./bonus/static_website/
-    ports:
-      - 81:81
-
-  redis:
-    image: redis:bonus
-    container_name: redis
-    build: ./bonus/redis/
-    restart: on-failure
-    networks:
-      - inception
 
   wordpress:
     image: wordpress:inception
@@ -70,6 +53,21 @@ services:
     depends_on:
       mariadb:
         condition: service_healthy
+    
+  static_website:
+    image: static_website:bonus
+    container_name: static_website
+    build: ./bonus/static_website/
+    ports:
+      - 81:81
+  
+  redis:
+    image: redis:bonus
+    container_name: redis
+    build: ./bonus/redis/
+    restart: on-failure
+    networks:
+      - inception
 
   ftp_server:
     image: ftp_server:bonus
@@ -87,6 +85,16 @@ services:
     ports:
       - 21:21
       - 2100:2100
+
+  ssh_server:
+    image: ssh_server:bonus
+    container_name: ssh_server
+    build: bonus/ssh_server/
+    restart: on-failure
+    ports:
+      - 1111:1111
+    volumes:
+      - wordpress_vol:/wordpress
 
 networks:
   inception:

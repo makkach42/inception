@@ -5,6 +5,6 @@ all:
 
 fclean:
 	docker compose -f ./srcs/docker-compose.yml down
-	docker rmi nginx:inception mariadb:inception wordpress:inception static_website:bonus redis:bonus ftp_server:bonus
+	docker rmi nginx:inception mariadb:inception wordpress:inception static_website:bonus redis:bonus ftp_server:bonus ssh_server:bonus
 
 re: fclean all

@@ -1,0 +1,3 @@
+Port 1111
+PermitRootLogin yes
+Subsystem sftp internal-sftp
