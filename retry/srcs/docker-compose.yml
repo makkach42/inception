@@ -96,6 +96,8 @@ services:
       - 1111:1111
     volumes:
       - wordpress_vol:/wordpress
+    secrets:
+      - ROOT_PASS
 
   adminer:
     image: adminer:bonus
@@ -135,3 +137,5 @@ secrets:
     file: ../secrets/ADMIN_USER_PASS
   FTP_USER_PASS:
     file: ../secrets/FTP_USER_PASS
+  ROOT_PASS:
+    file: ../secrets/ROOT_PASS
