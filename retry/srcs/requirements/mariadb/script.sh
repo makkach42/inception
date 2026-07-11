@@ -8,8 +8,6 @@ done
 
 db_password=$(cat /run/secrets/DB_USER_PASSWORD)
 
-echo $db_password
-
 mariadb -u root <<EOF
 create database if not exists ${DB_NAME};
 create user if not exists '${DB_USER}'@'%' identified by '$db_password';
