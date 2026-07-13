@@ -6,8 +6,36 @@ this inception project is all about docker, containers and their capabilities. i
 
 <u>**Instructions**</u>
 
+**Build and run**
+
 ```
+make
 ```
+
+- Creates the host data directories (/home/$USER/data/mariadb, /home/$USER/data/wordpress) and builds/starts all containers in the foreground.
+
+```
+make up       # start containers without rebuilding
+make stop     # stop containers without removing them
+make down     # stop and remove containers
+make fclean   # stop containers, prune all Docker resources, delete host data directories
+make re       # fclean + all (full rebuild from scratch)
+```
+
+**Accessing services**
+
+- WordPress site: https://makkach.42.fr or https://localhost (self-signed cert — accept the browser warning)
+- Static website: http://localhost:81
+- Adminer (DB admin): http://localhost:9999 — server: mariadb, user/password: from .env/secrets, database: wordpress
+- FTP: ftp://localhost:21 — user: FTP_USER value, password: from FTP_USER_PASS secret
+- SSH: ssh root@localhost -p 1111 — password: from ROOT_PASS secret
+
+**Notes**
+
+- Add makkach.42.fr to /etc/hosts pointing to 127.0.0.1 to use the configured domain instead of localhost.
+- wordpress_vol is shared between nginx, WordPress, the FTP server, and the SSH server. mariadb_vol persists database data across restarts.
+- make fclean is destructive — it deletes all locally stored WordPress and database data.
+
 
 <u>**Resources**</u>
 
