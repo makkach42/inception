@@ -1,6 +1,6 @@
 FROM debian:bookworm
 
-RUN apt update && apt install -y php wget
+RUN apt update && apt install -y php php-mysqli wget
 
 RUN wget https://www.adminer.org/latest.php -O adminer.php
 

@@ -60,7 +60,7 @@ services:
     container_name: static_website
     build: ./bonus/static_website/
     ports:
-      - 81:81
+      - 80:80
   
   redis:
     image: redis:bonus

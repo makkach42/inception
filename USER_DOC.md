@@ -1,7 +1,7 @@
 **What's included**
 - WordPress: The website
 - MariaDB: Database
-- Static website: Seperate simple site (port 81)
+- Static website: Seperate simple site (port 80)
 Redis: Cashing for wordpress
 FTP server: File upload/download
 SSH server: Remote container access
@@ -20,7 +20,7 @@ make fclean   # stop and delete all data — irreversible
 **Accessing things**
 
 - Website: https://makkach.42.fr or https://localhost (self-signed cert — click through the browser warning)
-- Static site: http://localhost:81
+- Static site: http://localhost:80
 - WordPress admin: https://makkach.42.fr/wp-admin
 - Database admin (Adminer): http://localhost:9999 → Server: mariadb, Database: wordpress, credentials below
 
@@ -50,4 +50,4 @@ All services should show "Up" (MariaDB also "healthy"). If one's missing or rest
 docker logs <container_name>
 ```
 
-Then confirm by visiting the site (https://makkach.42.fr), Adminer (http://localhost:9999), and the static site (http://localhost:81) in a browser.
+Then confirm by visiting the site (https://makkach.42.fr), Adminer (http://localhost:9999), and the static site (http://localhost:80) in a browser.

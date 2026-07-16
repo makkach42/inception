@@ -4,6 +4,6 @@ RUN apt update && apt install nginx -y
 
 COPY site /var/www/site
 
-COPY my.conf /etc/nginx/conf.d/my.conf
+COPY my.conf /etc/nginx/sites-enabled/default
 
 CMD ["nginx", "-g", "daemon off;"]

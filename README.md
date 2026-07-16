@@ -25,7 +25,7 @@ make re       # fclean + all (full rebuild from scratch)
 **Accessing services**
 
 - WordPress site: https://makkach.42.fr or https://localhost (self-signed cert — accept the browser warning)
-- Static website: http://localhost:81
+- Static website: http://localhost:80
 - Adminer (DB admin): http://localhost:9999 — server: mariadb, user/password: from .env/secrets, database: wordpress
 - FTP: ftp://localhost:21 — user: FTP_USER value, password: from FTP_USER_PASS secret
 - SSH: ssh root@localhost -p 1111 — password: from ROOT_PASS secret
