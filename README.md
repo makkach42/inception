@@ -25,7 +25,7 @@ make re       # fclean + all (full rebuild from scratch)
 **Accessing services**
 
 - WordPress site: https://makkach.42.fr or https://localhost (self-signed cert — accept the browser warning)
-- Static website: http://localhost:80
+- Static website: http://localhost:8000
 - Adminer (DB admin): http://localhost:9999 — server: mariadb, user/password: from .env/secrets, database: wordpress
 - FTP: ftp://localhost:21 — user: FTP_USER value, password: from FTP_USER_PASS secret
 - SSH: ssh root@localhost -p 1111 — password: from ROOT_PASS secret
@@ -46,6 +46,10 @@ some resources i found helpfull while making this project were the following one
 - Free Docker Fundamentals Course: https://www.youtube.com/playlist?list=PLTk5ZYSbd9Mg51szw21_75Hs1xUpGObDm
 
 - TLS Handshake: https://www.youtube.com/watch?v=ZkL10eoG1PY&t=476s
+
+<u>**AI usage**</u>
+
+AI was used for linking parts of knowledge that i have read across the internet and ones i heard from my peers. it was also used for minor research to understand underlying mechanisms.
 
 <u>**Project description**</u>
 

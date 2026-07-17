@@ -54,13 +54,15 @@ services:
     depends_on:
       mariadb:
         condition: service_healthy
+      redis:
+        condition: service_healthy
     
   static_website:
     image: static_website:bonus
     container_name: static_website
     build: ./bonus/static_website/
     ports:
-      - 80:80
+      - 8000:8000
   
   redis:
     image: redis:bonus
@@ -69,6 +71,11 @@ services:
     restart: on-failure
     networks:
       - inception
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 3s
+      timeout: 3s
+      retries: 10
 
   ftp_server:
     image: ftp_server:bonus
@@ -111,15 +118,18 @@ services:
 
 networks:
   inception:
+    name: inception
 
 volumes:
   mariadb_vol:
+    name: mariadb_vol
     driver: local
     driver_opts:
       type: none
       device: /home/makkach/data/mariadb
       o: bind
   wordpress_vol:
+    name: wordpress_vol
     driver: local
     driver_opts:
       type: none

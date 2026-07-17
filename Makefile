@@ -13,8 +13,7 @@ stop:
 	docker compose -f ./srcs/docker-compose.yml stop
 
 fclean:
-	docker compose -f ./srcs/docker-compose.yml down
-	docker system prune -af
+	docker compose -f ./srcs/docker-compose.yml down --rmi all -v
 	sudo rm -rf /home/$$USER/data
 
 re: fclean all
