@@ -15,14 +15,47 @@ project_root/
     ├── .env
     ├── requirements/
     │   ├── nginx/
+    │   │   ├── Dockerfile
+    │   │   ├── conf/
+    │   │   │   └── my.conf
+    │   │   └── tools/
+    │   │       └── script.sh
     │   ├── mariadb/
+    │   │   ├── Dockerfile
+    │   │   └── tools/
+    │   │       └── script.sh
     │   └── wordpress/
+    │       ├── Dockerfile
+    │       ├── conf/
+    │       │   └── www.conf
+    │       └── tools/
+    │           └── script.sh
     └── bonus/
         ├── static_website/
+        │   ├── Dockerfile
+        │   ├── conf/
+        │   │   └── my.conf
+        │   └── tools/
+        │       └── site/
+        │           ├── index.html
+        │           ├── style.css
+        │           └── script.js
         ├── redis/
+        │   └── Dockerfile
         ├── ftp_server/
+        │   ├── Dockerfile
+        │   ├── conf/
+        │   │   └── vsftpd.conf
+        │   └── tools/
+        │       └── script.sh
         ├── ssh_server/
+        │   ├── Dockerfile
+        │   ├── conf/
+        │   │   └── sshd_config
+        │   └── tools/
+        │       └── script.sh
         └── adminer/
+            └── Dockerfile
 ```
 Create secrets — one password per file, no trailing content beyond the password itself:
 
@@ -64,7 +97,7 @@ docker compose -f ./srcs/docker-compose.yml up --build <service_name>
 make up       # start without rebuilding
 make stop     # stop containers, keep them (fast resume)
 make down     # stop and remove containers, keep volumes
-make fclean   # down + docker system prune -af + delete host data dirs
+make fclean   # down --rmi all -v + delete host data dirs
 make re       # fclean then all (full rebuild)
 ```
 Useful direct commands:

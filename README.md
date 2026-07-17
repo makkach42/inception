@@ -18,7 +18,7 @@ make
 make up       # start containers without rebuilding
 make stop     # stop containers without removing them
 make down     # stop and remove containers
-make fclean   # stop containers, prune all Docker resources, delete host data directories
+make fclean   # stop containers, remove images/networks/volumes for this stack, delete host data directories
 make re       # fclean + all (full rebuild from scratch)
 ```
 
